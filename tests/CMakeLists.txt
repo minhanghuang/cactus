@@ -13,6 +13,7 @@ link_directories (
 
 SET(TEST_SOURCES
   macros_test
+  rw_lock_test
 )
 
 FOREACH(test_src ${TEST_SOURCES})

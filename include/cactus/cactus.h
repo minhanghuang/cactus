@@ -3,6 +3,7 @@
 #include <string>
 
 #include "cactus/macros.h"
+#include "cactus/rw_lock.h"
 #include "cactus/version.h"
 
 namespace cactus {
