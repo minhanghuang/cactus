@@ -1,3 +1,5 @@
+#include "cactus/macros.h"
+
 #include <gtest/gtest.h>
 
 #include <cassert>
@@ -6,6 +8,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "cactus/cactus.h"
 
 class TestMacros : public testing::Test {
  public:
@@ -20,7 +24,28 @@ void TestMacros::TearDownTestCase() {}
 void TestMacros::TearDown() {}
 void TestMacros::SetUp() {}
 
-TEST_F(TestMacros, Test) {}
+class Cat {
+ public:
+  ~Cat() = default;
+  std::string name() const { return name_; }
+  int age() const { return age_; }
+  void set_name(const std::string& name) { name_ = name; }
+  void set_age(int age) { age_ = age; }
+
+ private:
+  std::string name_;
+  int age_;
+  CACTUS_DECLARE_SINGLETON(Cat)  // 声明单例
+};
+
+Cat::Cat() {}
+
+TEST_F(TestMacros, TestSingleton) {
+  Cat::Instance()->set_age(1);
+  ASSERT_EQ(1, Cat::Instance()->age());
+  Cat::Instance()->set_age(2);
+  ASSERT_EQ(2, Cat::Instance()->age());
+}
 
 int main(int argc, char* argv[]) {
   testing::InitGoogleTest(&argc, argv);
