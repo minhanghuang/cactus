@@ -21,15 +21,10 @@ include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
 find_package(PkgConfig REQUIRED)
-find_package(absl REQUIRED)
 
 include_directories(
   include
 )
-
-# link_directories(
-  # ${_LIBRARY_DIRS}
-# )
 
 file(GLOB CACTUS_SRCS
   "src/*.cc"
@@ -38,17 +33,6 @@ file(GLOB CACTUS_SRCS
 add_library(${TARGET_NAME} ${CACTUS_SHARED_TYPE}
   ${CACTUS_SRCS}
 )
-
-target_link_libraries(${TARGET_NAME}
-  absl::time
-  absl::strings
-  absl::str_format
-  absl::flat_hash_map
-)
-
-if(BUILD_CACTUS_TEST)
-  add_subdirectory(tests)
-endif()
 
 # #################################################################################
 # version
