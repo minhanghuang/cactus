@@ -34,6 +34,10 @@ add_library(${TARGET_NAME} ${CACTUS_SHARED_TYPE}
   ${CACTUS_SRCS}
 )
 
+if(BUILD_CACTUS_TEST)
+  add_subdirectory(tests)
+endif(BUILD_CACTUS_TEST)
+
 # #################################################################################
 # version
 # #################################################################################
