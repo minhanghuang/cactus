@@ -1,84 +1,44 @@
 #ifndef CACTUS_FACTORY_H_
 #define CACTUS_FACTORY_H_
-#include <map>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <unordered_map>
+#include <utility>
+
+#include "cactus/macros.h"
 
 namespace cactus {
 
-/// copy Apollo
-/**
- * @class Factory
- * @brief Implements a Factory design pattern with Register and Create methods
- *
- * The objects created by this factory all implement the same interface
- * (namely, AbstractProduct). This design pattern is useful in settings where
- * multiple implementations of an interface are available, and one wishes to
- * defer the choice of the implementation in use.
- *
- * @param IdentifierType Type used for identifying the registered classes,
- * typically std::string.
- * @param AbstractProduct The interface implemented by the registered classes
- * @param ProductCreator Function returning a pointer to an instance of
- * the registered class
- * @param MapContainer Internal implementation of the function mapping
- * IdentifierType to ProductCreator, by default std::unordered_map
- */
-template <typename IdentifierType, class AbstractProduct,
-          class ProductCreator = AbstractProduct* (*)(),
-          class MapContainer = std::map<IdentifierType, ProductCreator>>
 class Factory {
  public:
-  /**
-   * @brief Registers the class given by the creator function, linking it to id.
-   * Registration must happen prior to calling CreateObject.
-   * @param id Identifier of the class being registered
-   * @param creator Function returning a pointer to an instance of
-   * the registered class
-   * @return True if the key id is still available
-   */
-  bool Register(const IdentifierType& id, ProductCreator creator) {
-    return producers_.insert(std::make_pair(id, creator)).second;
-  }
+  ~Factory();
+  void Shutdown();
+  bool Register(const std::string& id, void* creator);
+  bool Contains(const std::string& id) const;
+  bool Unregister(const std::string& id);
+  void Clear();
+  bool Empty() const;
 
-  bool Contains(const IdentifierType& id) {
-    return producers_.find(id) != producers_.end();
-  }
-
-  /**
-   * @brief Unregisters the class with the given identifier
-   * @param id The identifier of the class to be unregistered
-   */
-  bool Unregister(const IdentifierType& id) {
-    return producers_.erase(id) == 1;
-  }
-
-  void Clear() { producers_.clear(); }
-
-  bool Empty() const { return producers_.empty(); }
-
-  /**
-   * @brief Creates and transfers membership of an object of type matching id.
-   * Need to register id before CreateObject is called. May return nullptr
-   * silently.
-   * @param id The identifier of the class we which to instantiate
-   * @param args the object construction arguments
-   */
-  template <typename... Args>
-  std::unique_ptr<AbstractProduct> CreateObject(const IdentifierType& id,
-                                                Args&&... args) {
+  template <typename Class>
+  std::unique_ptr<Class> GetObject(const std::string& id) {
+    std::lock_guard<std::mutex> guard(mutex_);
     auto id_iter = producers_.find(id);
     if (id_iter != producers_.end()) {
-      return std::unique_ptr<AbstractProduct>(
-          (id_iter->second)(std::forward<Args>(args)...));
+      return std::unique_ptr<Class>(static_cast<Class*>(id_iter->second));
     }
     return nullptr;
   }
 
  private:
-  MapContainer producers_;
+  std::mutex mutex_;
+  std::unordered_map<std::string, void*> producers_;
+  CACTUS_DECLARE_SINGLETON(Factory)  // 声明单例
 };
 
 }  // namespace cactus
+
+#define CACTUS_REGISTERS_TO_FACTORY(id, creator) \
+  cactus::Factory::Instance()->Register(id, creator);
 
 #endif  // CACTUS_FACTORY_H_
