@@ -38,6 +38,7 @@ class Animal {
 class Cat : public Animal {
  public:
   ~Cat() = default;
+  Cat() : Animal("animal") {}
   Cat(const std::string& name) : Animal(name) {}
   std::string c() const { return "c"; }
 };
@@ -50,40 +51,26 @@ class Dog : public Animal {
 };
 
 TEST_F(TestFactory, TestRegister) {
+  CACTUS_REGISTERS_TO_FACTORY(Cat);
   auto factory = cactus::Factory::Instance();
-  factory->Register("Cat", new Cat("Tom"));
   {
-    std::unique_ptr<Cat> cat = factory->GetObject<Cat>("Cat");
+    std::shared_ptr<Cat> cat = factory->GetObject<Cat>();
     ASSERT_TRUE(nullptr != cat);
   }
   {
-    std::unique_ptr<Cat> cat = factory->GetObject<Cat>("Non_Exist_Cat");
-    ASSERT_TRUE(nullptr == cat);
-  }
-}
-
-TEST_F(TestFactory, TestUnregister) {
-  auto factory = cactus::Factory::Instance();
-  factory->Register("Cat", new Cat("Tom"));
-  {
-    std::unique_ptr<Cat> cat = factory->GetObject<Cat>("Cat");
-    ASSERT_TRUE(nullptr != cat);
+    auto ret = factory->Register<Cat>("Cat1");
+    ASSERT_TRUE(ret);
+    ret = factory->Register<Cat>("Cat1");
+    ASSERT_TRUE(!ret);
+    std::shared_ptr<Cat> cat = factory->GetObject<Cat>("Cat1");
+    ASSERT_TRUE(cat != nullptr);
+    std::shared_ptr<Cat> cat2 = factory->GetObject<Cat>();
+    ASSERT_TRUE(cat2 != nullptr);
   }
   {
-    factory->Unregister("Cat");
-    std::unique_ptr<Cat> cat = factory->GetObject<Cat>("Cat");
-    ASSERT_TRUE(nullptr == cat);
+    std::shared_ptr<Cat> cat = CACTUS_GETOBJECT_FROM_FACTORY(Cat);
+    ASSERT_TRUE(cat != nullptr);
   }
-}
-
-TEST_F(TestFactory, TestDefineRegister) {
-  CACTUS_REGISTERS_TO_FACTORY("Cat", static_cast<void*>(new Cat("Tom")));
-  auto factory = cactus::Factory::Instance();
-  {
-    std::unique_ptr<Cat> cat = factory->GetObject<Cat>("Cat");
-    ASSERT_TRUE(nullptr != cat);
-  }
-  cactus::Factory::CleanUp();
 }
 
 int main(int argc, char* argv[]) {
