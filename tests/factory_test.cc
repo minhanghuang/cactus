@@ -30,6 +30,7 @@ class Animal {
   Animal(const std::string& name) : name_(name) {}
   virtual ~Animal() = default;
   std::string name() const { return name_; }
+  void set_name(const std::string& name) { name_ = name; }
 
  private:
   std::string name_;
@@ -51,8 +52,10 @@ class Dog : public Animal {
 };
 
 TEST_F(TestFactory, TestRegister) {
-  CACTUS_REGISTERS_TO_FACTORY(Cat);
   auto factory = cactus::Factory::Instance();
+  ASSERT_EQ(0, factory->GetClassNames().size());
+  CACTUS_REGISTERS_TO_FACTORY(Cat);
+  ASSERT_EQ(1, factory->GetClassNames().size());
   {
     std::shared_ptr<Cat> cat = factory->GetObject<Cat>();
     ASSERT_TRUE(nullptr != cat);
@@ -71,6 +74,47 @@ TEST_F(TestFactory, TestRegister) {
     std::shared_ptr<Cat> cat = CACTUS_GETOBJECT_FROM_FACTORY(Cat);
     ASSERT_TRUE(cat != nullptr);
   }
+}
+
+TEST_F(TestFactory, TestUnregister) {
+  auto factory = cactus::Factory::Instance();
+  ASSERT_EQ(2, factory->GetClassNames().size());
+  auto cat = CACTUS_GETOBJECT_FROM_FACTORY(Cat);
+  ASSERT_TRUE(nullptr != cat);
+  ASSERT_EQ("animal", cat->name());
+  CACTUS_UNREGISTER_FROM_FACTORY(Cat);
+  ASSERT_EQ(1, factory->GetClassNames().size());
+  ASSERT_TRUE(nullptr != cat);
+  ASSERT_EQ("animal", cat->name());
+}
+
+TEST_F(TestFactory, TestAppendObject) {
+  auto factory = cactus::Factory::Instance();
+  ASSERT_EQ(1, factory->GetClassNames().size());
+
+  // append new cat
+  Cat* cat = new Cat();
+  cat->set_name("star_cat");
+  CACTUS_APPENDOBJECT_TO_FACTORY(Cat, cat);
+  ASSERT_EQ(2, factory->GetClassNames().size());
+  std::shared_ptr<Cat> get_cat = CACTUS_GETOBJECT_FROM_FACTORY(Cat);
+  ASSERT_EQ("star_cat", get_cat->name());
+
+  // append cat object
+  Cat obj_cat;
+  obj_cat.set_name("obj_cat");
+  CACTUS_APPENDOBJECT_TO_FACTORY(Cat, obj_cat);
+  ASSERT_EQ(2, factory->GetClassNames().size());
+  get_cat = CACTUS_GETOBJECT_FROM_FACTORY(Cat);
+  ASSERT_EQ("obj_cat", get_cat->name());
+
+  // append shared cat
+  std::shared_ptr<Cat> shared_cat = std::make_shared<Cat>();
+  shared_cat->set_name("shared_cat");
+  CACTUS_APPENDOBJECT_TO_FACTORY(Cat, shared_cat.get());
+  ASSERT_EQ(2, factory->GetClassNames().size());
+  get_cat = CACTUS_GETOBJECT_FROM_FACTORY(Cat);
+  ASSERT_EQ("shared_cat", get_cat->name());
 }
 
 int main(int argc, char* argv[]) {
