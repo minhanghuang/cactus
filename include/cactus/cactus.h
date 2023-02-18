@@ -9,10 +9,12 @@
 
 namespace cactus {
 
-static std::string GetVersion();
+std::string GetVersion();
 
-static std::string GetEnv(const std::string& var_name,
-                          const std::string& default_value = "");
+std::string GetEnv(const std::string& var_name,
+                   const std::string& default_value = "");
+
+bool FileExists(const std::string& file_path);
 
 }  // namespace cactus
 

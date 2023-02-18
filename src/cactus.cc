@@ -17,4 +17,12 @@ std::string GetEnv(const std::string& var_name,
   return std::string(var);
 }
 
+bool FileExists(const std::string& file_path) {
+  if (FILE* f = fopen(file_path.c_str(), "r")) {
+    fclose(f);
+    return true;
+  }
+  return false;
+}
+
 }  // namespace cactus

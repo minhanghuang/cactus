@@ -8,11 +8,21 @@ namespace cactus {
 namespace math {
 
 template <typename T>
-static T Square(const T value) {
+T Square(const T value) {
   return value * value;
 }
 
-static double NormalizeAngle(const double angle);
+double NormalizeAngle(const double angle);
+
+template <typename T>
+double EuclideanDistance(const T& p0, const T& p1) {
+  return std::sqrt(std::pow(p0.x - p1.x, 2.0) + std::pow(p0.y - p1.y, 2.0));
+}
+
+template <typename T>
+double ManhattanDistance(const T& p0, const T& p1) {
+  return std::abs(p0.x - p1.x) + std::abs(p0.y - p1.y);
+}
 
 /**
  * @brief Clamp a value between two bounds.
@@ -24,7 +34,7 @@ static double NormalizeAngle(const double angle);
  * @return The clamped value.
  */
 template <typename T>
-static T Clamp(const T value, T bound1, T bound2) {
+T Clamp(const T value, T bound1, T bound2) {
   if (bound1 > bound2) {
     std::swap(bound1, bound2);
   }

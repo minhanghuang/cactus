@@ -6,6 +6,7 @@
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "cactus/macros.h"
 
@@ -16,6 +17,7 @@ class Factory {
   ~Factory();
   bool Contains(const std::string& classname) const;
   bool Empty() const;
+  std::vector<std::string> GetClassNames();
 
   template <typename Class>
   bool Register(const std::string& class_name) {
@@ -29,24 +31,50 @@ class Factory {
 
   template <typename Class>
   bool Register() {
-    std::lock_guard<std::mutex> guard(mutex_);
     std::string class_name = typeid(Class).name();
+    return Register<Class>(class_name);
+  }
+
+  template <typename Class>
+  bool Unregister(const std::string& class_name) {
+    std::lock_guard<std::mutex> guard(mutex_);
     if (producers_.count(class_name)) {
-      return false;
+      producers_.erase(class_name);
+      return true;
     }
-    producers_.emplace(std::make_pair(class_name, std::make_shared<Class>()));
+    return false;
+  }
+
+  template <typename Class>
+  bool Unregister() {
+    std::string class_name = typeid(Class).name();
+    return Unregister<Class>(class_name);
+  }
+
+  template <typename Class>
+  bool AppendObject(Class* object, const std::string& class_name) {
+    std::lock_guard<std::mutex> guard(mutex_);
+    producers_[class_name] = std::shared_ptr<void>(object);
     return true;
   }
 
   template <typename Class>
-  std::shared_ptr<Class> GetObject() {
-    std::lock_guard<std::mutex> guard(mutex_);
+  bool AppendObject(Class* object) {
     std::string class_name = typeid(Class).name();
-    auto id_iter = producers_.find(class_name);
-    if (id_iter != producers_.end()) {
-      return std::static_pointer_cast<Class>(id_iter->second);
-    }
-    return nullptr;
+    return AppendObject<Class>(object, class_name);
+  }
+
+  template <typename Class>
+  bool AppendObject(const Class& object, const std::string& class_name) {
+    std::lock_guard<std::mutex> guard(mutex_);
+    producers_[class_name] = std::make_shared<Class>(object);
+    return true;
+  }
+
+  template <typename Class>
+  bool AppendObject(const Class& object) {
+    std::string class_name = typeid(Class).name();
+    return AppendObject<Class>(object, class_name);
   }
 
   template <typename Class>
@@ -57,6 +85,12 @@ class Factory {
       return std::static_pointer_cast<Class>(id_iter->second);
     }
     return nullptr;
+  }
+
+  template <typename Class>
+  std::shared_ptr<Class> GetObject() {
+    std::string class_name = typeid(Class).name();
+    return GetObject<Class>(class_name);
   }
 
  private:
@@ -72,5 +106,11 @@ class Factory {
 
 #define CACTUS_GETOBJECT_FROM_FACTORY(classname) \
   cactus::Factory::Instance()->GetObject<classname>();
+
+#define CACTUS_UNREGISTER_FROM_FACTORY(classname) \
+  cactus::Factory::Instance()->Unregister<classname>();
+
+#define CACTUS_APPENDOBJECT_TO_FACTORY(classname, object) \
+  cactus::Factory::Instance()->AppendObject<classname>(object);
 
 #endif  // CACTUS_FACTORY_H_
