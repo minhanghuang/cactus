@@ -27,6 +27,7 @@ include_directories(
 )
 
 file(GLOB CACTUS_SRCS
+  "src/math/*.cc"
   "src/*.cc"
 )
 
