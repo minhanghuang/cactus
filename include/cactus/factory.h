@@ -31,7 +31,7 @@ class Factory {
   }
 
   template <typename Class>
-  bool Register(Class* object, const std::string& class_name,
+  bool Register(const Class* object, const std::string& class_name,
                 bool force = false) {
     std::lock_guard<std::mutex> guard(mutex_);
     if (!force && producers_.count(class_name)) {
