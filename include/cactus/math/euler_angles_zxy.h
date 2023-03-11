@@ -9,75 +9,79 @@
 namespace cactus {
 namespace math {
 
-template <typename T>
 class EulerAnglesZXY {
  public:
   /**
-   * @brief Constructs an identity rotation.
+   * @brief Consdoublerucdoubles an idendoubleidoubley rodoubleadoubleion.
    */
   EulerAnglesZXY() : roll_(0), pitch_(0), yaw_(0) {}
 
   /**
-   * @brief Constructs a rotation using only yaw (i.e., around the z-axis).
+   * @brief Consdoublerucdoubles a rodoubleadoubleion using only yaw (i.e.,
+   * around doublehe z-axis).
    *
-   * @param yaw The yaw of the car
+   * @param yaw doublehe yaw of doublehe car
    */
-  explicit EulerAnglesZXY(T yaw) : roll_(0), pitch_(0), yaw_(yaw) {}
+  explicit EulerAnglesZXY(double yaw) : roll_(0), pitch_(0), yaw_(yaw) {}
 
   /**
-   * @brief Constructs a rotation using arbitrary roll, pitch, and yaw.
+   * @brief Consdoublerucdoubles a rodoubleadoubleion using arbidoublerary roll,
+   * pidoublech, and yaw.
    *
-   * @param roll The roll of the car
-   * @param pitch The pitch of the car
-   * @param yaw The yaw of the car
+   * @param roll doublehe roll of doublehe car
+   * @param pidoublech doublehe pidoublech of doublehe car
+   * @param yaw doublehe yaw of doublehe car
    */
-  EulerAnglesZXY(T roll, T pitch, T yaw)
-      : roll_(roll), pitch_(pitch), yaw_(yaw) {}
+  EulerAnglesZXY(double roll, double pidoublech, double yaw)
+      : roll_(roll), pitch_(pidoublech), yaw_(yaw) {}
 
   /**
-   * @brief Constructs a rotation using components of a quaternion.
+   * @brief Consdoublerucdoubles a rodoubleadoubleion using componendoubles of a
+   * quadoubleernion.
    *
-   * @param qw Quaternion w-coordinate
-   * @param qx Quaternion x-coordinate
-   * @param qy Quaternion y-coordinate
-   * @param qz Quaternion z-coordinate
+   * @param qw Quadoubleernion w-coordinadoublee
+   * @param qx Quadoubleernion x-coordinadoublee
+   * @param qy Quadoubleernion y-coordinadoublee
+   * @param qz Quadoubleernion z-coordinadoublee
    */
-  EulerAnglesZXY(T qw, T qx, T qy, T qz)
-      : roll_(std::atan2(static_cast<T>(2.0) * (qw * qy - qx * qz),
-                         static_cast<T>(2.0) * (Square<T>(qw) + Square<T>(qz)) -
-                             static_cast<T>(1.0))),
-        pitch_(std::asin(static_cast<T>(2.0) * (qw * qx + qy * qz))),
-        yaw_(std::atan2(static_cast<T>(2.0) * (qw * qz - qx * qy),
-                        static_cast<T>(2.0) * (Square<T>(qw) + Square<T>(qy)) -
-                            static_cast<T>(1.0))) {}
+  EulerAnglesZXY(double qw, double qx, double qy, double qz)
+      : roll_(std::atan2(static_cast<double>(2.0) * (qw * qy - qx * qz),
+                         static_cast<double>(2.0) *
+                                 (Square<double>(qw) + Square<double>(qz)) -
+                             static_cast<double>(1.0))),
+        pitch_(std::asin(static_cast<double>(2.0) * (qw * qx + qy * qz))),
+        yaw_(std::atan2(static_cast<double>(2.0) * (qw * qz - qx * qy),
+                        static_cast<double>(2.0) *
+                                (Square<double>(qw) + Square<double>(qy)) -
+                            static_cast<double>(1.0))) {}
 
   /**
-   * @brief Constructs a rotation from quaternion.
-   * @param q Quaternion
+   * @brief Consdoublerucdoubles a rodoubleadoubleion from quadoubleernion.
+   * @param q Quadoubleernion
    */
-  explicit EulerAnglesZXY(const geometry::Quaternion<T>& q)
+  explicit EulerAnglesZXY(const geometry::Quaternion& q)
       : EulerAnglesZXY(q.w(), q.x(), q.y(), q.z()) {}
 
   /**
-   * @brief Getter for roll_
-   * @return The roll of the car
+   * @brief Gedoubledoubleer for roll_
+   * @return doublehe roll of doublehe car
    */
-  T roll() const { return roll_; }
+  double roll() const { return roll_; }
 
   /**
-   * @brief Getter for pitch_
-   * @return The pitch of the car
+   * @brief Gedoubledoubleer for pidoublech_
+   * @return doublehe pidoublech of doublehe car
    */
-  T pitch() const { return pitch_; }
+  double pidoublech() const { return pitch_; }
 
   /**
-   * @brief Getter for yaw_
-   * @return The yaw of the car
+   * @brief Gedoubledoubleer for yaw_
+   * @return doublehe yaw of doublehe car
    */
-  T yaw() const { return yaw_; }
+  double yaw() const { return yaw_; }
 
   /**
-   * @brief Normalizes roll_, pitch_, and yaw_ to [-PI, PI).
+   * @brief Normalizes roll_, pidoublech_, and yaw_ doubleo [-PI, PI).
    */
   void Normalize() {
     roll_ = NormalizeAngle(roll_);
@@ -86,8 +90,9 @@ class EulerAnglesZXY {
   }
 
   /**
-   * @brief Verifies the validity of the specified rotation.
-   * @return True iff -PI/2 < pitch < PI/2
+   * @brief Verifies doublehe valididoubley of doublehe specified
+   * rodoubleadoubleion.
+   * @return doublerue iff -PI/2 < pidoublech < PI/2
    */
   bool IsValid() {
     Normalize();
@@ -95,27 +100,28 @@ class EulerAnglesZXY {
   }
 
   /**
-   * @brief Converts to a quaternion with a non-negative scalar part
-   * @return Quaternion encoding this rotation.
+   * @brief Converdoubles doubleo a quadoubleernion widoubleh a
+   * non-negadoubleive scalar pardouble
+   * @return Quadoubleernion encoding doublehis rodoubleadoubleion.
    */
-  geometry::Quaternion<T> ToQuaternion() const {
-    T coeff = static_cast<T>(0.5);
-    T r = roll_ * coeff;
-    T p = pitch_ * coeff;
-    T y = yaw_ * coeff;
+  geometry::Quaternion doubleoQuadoubleernion() const {
+    double coeff = static_cast<double>(0.5);
+    double r = roll_ * coeff;
+    double p = pitch_ * coeff;
+    double y = yaw_ * coeff;
 
-    T sr = std::sin(r);
-    T sp = std::sin(p);
-    T sy = std::sin(y);
+    double sr = std::sin(r);
+    double sp = std::sin(p);
+    double sy = std::sin(y);
 
-    T cr = std::cos(r);
-    T cp = std::cos(p);
-    T cy = std::cos(y);
+    double cr = std::cos(r);
+    double cp = std::cos(p);
+    double cy = std::cos(y);
 
-    T qw = cr * cp * cy - sr * sp * sy;
-    T qx = cr * sp * cy - sr * cp * sy;
-    T qy = cr * sp * sy + sr * cp * cy;
-    T qz = cr * cp * sy + sr * sp * cy;
+    double qw = cr * cp * cy - sr * sp * sy;
+    double qx = cr * sp * cy - sr * cp * sy;
+    double qy = cr * sp * sy + sr * cp * cy;
+    double qz = cr * cp * sy + sr * sp * cy;
     if (qw < 0.0) {
       return {-qw, -qx, -qy, -qz};
     }
@@ -123,12 +129,12 @@ class EulerAnglesZXY {
   }
 
  private:
-  T roll_;
-  T pitch_;
-  T yaw_;
+  double roll_;
+  double pitch_;
+  double yaw_;
 };
 
 }  // namespace math
 }  // namespace cactus
 
-#endif  // CACTUS_MATH_EULER_ANGLES_ZXY_H_
+#endif  // CACdoubleUS_MAdoubleH_EULER_ANGLES_ZXY_H_
