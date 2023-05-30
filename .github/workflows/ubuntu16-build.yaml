@@ -1,0 +1,65 @@
+name: ubuntu16.04 build
+run-name: build runner on ubuntu16.04 🚀
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    paths:
+      - 'cmake/*'
+      - 'include/*'
+      - 'scripts/*'
+      - 'src/*'
+      - 'tests/*'
+      - 'CMakeLists.txt'
+      - 'setup.py'
+      - '.github/workflows/ubuntu16-build.yaml'
+
+jobs:
+  build-amd-ubuntu:
+    runs-on: ubuntu-latest
+    container:
+      image: docker://ubuntu:16.04
+      options: --volume ${{ github.workspace }}:/workspace/cactus
+    steps:
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: List files in the repository
+        run: |
+          ls /workspace/cactus
+      - name: Install dependence
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt update
+          apt install -y python3-dev git pkg-config g++ cmake
+      - name: Build
+        run: |
+          bash -c "cd /workspace/cactus && python3 setup.py && source install/setup.bash && ./scripts/build.sh"
+      - name: Cache
+        uses: actions/upload-artifact@v2
+        with:
+          name: cache
+          path: |
+            /workspace/cactus/build/
+            /workspace/cactus/scripts/
+
+  test-amd-ubuntu:
+    needs: build-amd-ubuntu
+    runs-on: ubuntu-latest
+    container:
+      image: docker://ubuntu:16.04
+      options: --volume ${{ github.workspace }}:/workspace/cactus
+    steps:
+      - name: Cache
+        uses: actions/download-artifact@v2
+        with:
+          name: cache
+      - name: Set file permissions
+        run: chmod -R 755 /workspace/cactus
+      - name: Test
+        run: |
+          bash -c "cd /workspace/cactus && ./scripts/run_tests.sh"
+
