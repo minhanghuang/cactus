@@ -1,5 +1,6 @@
 #ifndef CACTUS_H_
 #define CACTUS_H_
+#include <algorithm>
 #include <string>
 #include <vector>
 

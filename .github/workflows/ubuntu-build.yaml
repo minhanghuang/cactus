@@ -1,5 +1,5 @@
-name: ubuntu16.04 build
-run-name: build runner on ubuntu16.04 🚀
+name: ubuntu build
+run-name: build runner on ubuntu 🚀
 
 on:
   pull_request:
@@ -8,19 +8,22 @@ on:
   push:
     paths:
       - 'cmake/*'
-      - 'include/*'
-      - 'scripts/*'
-      - 'src/*'
-      - 'tests/*'
+      - 'include/**/*.h'
+      - 'scripts/**'
+      - 'src/**/*.cc'
+      - 'tests/**'
       - 'CMakeLists.txt'
       - 'setup.py'
-      - '.github/workflows/ubuntu16-build.yaml'
+      - '.github/workflows/ubuntu-build.yaml'
 
 jobs:
   build-amd-ubuntu:
+    strategy:
+      matrix:
+        os: ["16.04", "18.04", "20.04", "22.04"]
     runs-on: ubuntu-latest
     container:
-      image: docker://ubuntu:16.04
+      image: docker://ubuntu:${{ matrix.os }}
       options: --volume ${{ github.workspace }}:/workspace/cactus
     steps:
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
@@ -41,25 +44,29 @@ jobs:
       - name: Cache
         uses: actions/upload-artifact@v2
         with:
-          name: cache
+          name: ${{ matrix.os }}
           path: |
             /workspace/cactus/build/
+            /workspace/cactus/install/
             /workspace/cactus/scripts/
 
   test-amd-ubuntu:
+    strategy:
+      matrix:
+        os: ["16.04", "18.04", "20.04", "22.04"]
     needs: build-amd-ubuntu
     runs-on: ubuntu-latest
     container:
-      image: docker://ubuntu:16.04
+      image: docker://ubuntu:${{ matrix.os }}
       options: --volume ${{ github.workspace }}:/workspace/cactus
     steps:
       - name: Cache
         uses: actions/download-artifact@v2
         with:
-          name: cache
+          name: ${{ matrix.os }}
       - name: Set file permissions
         run: chmod -R 755 /workspace/cactus
       - name: Test
         run: |
-          bash -c "cd /workspace/cactus && ./scripts/run_tests.sh"
+          bash -c "cd /workspace/cactus && source install/setup.bash && ./scripts/run_tests.sh"
 
