@@ -24,7 +24,16 @@ void TestMacros::TearDownTestCase() {}
 void TestMacros::TearDown() {}
 void TestMacros::SetUp() {}
 
+class Mouse {
+  CACTUS_REGISTER_MEMBER_COMPLEX_TYPE(std::string, name);
+
+ public:
+  Mouse() = default;
+};
+
 class Cat {
+  CACTUS_REGISTER_MEMBER_SHARED_PTR(Mouse, mouse);
+
  public:
   ~Cat() = default;
   std::string name() const { return name_; }
@@ -42,9 +51,23 @@ Cat::Cat() {}
 
 TEST_F(TestMacros, TestSingleton) {
   Cat::Instance()->set_age(1);
+  auto cat = Cat::Instance();
+  ASSERT_EQ(1, cat->age());
   ASSERT_EQ(1, Cat::Instance()->age());
   Cat::Instance()->set_age(2);
   ASSERT_EQ(2, Cat::Instance()->age());
+}
+
+TEST_F(TestMacros, TestMemberSharedPtr) {
+  auto cat = Cat::Instance();
+  std::shared_ptr<Mouse> mouse = std::make_shared<Mouse>();
+  mouse->set_name("Jerry");
+  ASSERT_EQ("Jerry", mouse->name());
+  cat->set_mouse(mouse);
+  ASSERT_EQ("Jerry", cat->mouse()->name());
+  ASSERT_EQ("Jerry", cat->mutable_mouse()->name());
+  cat->set_mouse(std::make_shared<Mouse>());
+  ASSERT_EQ("", cat->mouse()->name());
 }
 
 int main(int argc, char* argv[]) {
