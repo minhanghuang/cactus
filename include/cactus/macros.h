@@ -24,17 +24,17 @@
   void set_##var(const type& var) noexcept { var##_ = var; } \
   void set_##var(type&& var) noexcept { var##_ = std::move(var); }
 
-#define CACTUS_REGISTER_MEMBER_SHARED_PTR(type, ptr)        \
- private:                                                   \
-  using Ptr = std::shared_ptr<type>;                        \
-  using ConstPtr = std::shared_ptr<type const>;             \
-  Ptr ptr##_;                                               \
-                                                            \
- public:                                                    \
-  ConstPtr ptr() const noexcept { return ptr##_; }          \
-  Ptr mutable_##ptr() noexcept { return ptr##_; }           \
-  void set_##ptr(const Ptr& ptr) noexcept { ptr##_ = ptr; } \
-  void set_##ptr(Ptr&& ptr) noexcept { ptr##_ = ptr; }
+#define CACTUS_REGISTER_MEMBER_SHARED_PTR(type, ptr)                          \
+ private:                                                                     \
+  std::shared_ptr<type> ptr##_;                                               \
+                                                                              \
+ public:                                                                      \
+  std::shared_ptr<type const> ptr() const noexcept { return ptr##_; }         \
+  std::shared_ptr<type> mutable_##ptr() noexcept { return ptr##_; }           \
+  void set_##ptr(const std::shared_ptr<type>& ptr) noexcept { ptr##_ = ptr; } \
+  void set_##ptr(std::shared_ptr<type>&& ptr) noexcept {                      \
+    ptr##_ = std::move(ptr);                                                  \
+  }
 
 #define CACTUS_DEFINE_TYPE_TRAIT(name, func)              \
   template <typename T>                                   \
