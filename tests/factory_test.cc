@@ -51,6 +51,15 @@ class Dog : public Animal {
   std::string d() const { return "d"; }
 };
 
+class Mouse : public Animal {
+ public:
+  ~Mouse() = default;
+  Mouse() : Animal("") {}
+  Mouse(const std::string& name) : Animal(name) {}
+  std::string m() const { return "m"; }
+};
+REGISTER_OBJECT_FACTORY_INTERNAL(Mouse);
+
 TEST_F(TestFactory, TestRegister) {
   auto factory = cactus::Factory::Instance();
   {
