@@ -6,9 +6,9 @@ Factory::~Factory() {}
 
 Factory::Factory() {}
 
-bool Factory::Contains(const std::string& classname) {
+bool Factory::Contains(const std::string& unique_id) {
   std::lock_guard<std::mutex> guard(mutex_);
-  return producers_.count(classname) > 0;
+  return producers_.count(unique_id) > 0;
 }
 
 bool Factory::Empty() {
