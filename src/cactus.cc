@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2023 minhanghuang <job@minhang.me>. - All Rights Reserved
+ */
 #include "cactus/cactus.h"
 
 namespace cactus {
@@ -57,11 +60,15 @@ std::string StrToLower(const std::string& s) {
 
 std::string GetTimeStr() {
   time_t now = time(0);
-  tm* ltm = localtime(&now);
-  return std::to_string(1900 + ltm->tm_year) + "-" +
-         std::to_string(1 + ltm->tm_mon) + "-" + std::to_string(ltm->tm_mday) +
-         " " + std::to_string(ltm->tm_hour) + ":" +
-         std::to_string(ltm->tm_min) + ":" + std::to_string(ltm->tm_sec);
+  struct tm result;
+  if (nullptr == localtime_r(&now, &result)) {
+    return std::string("1970-01-01 00:00:00");
+  }
+  return std::to_string(1900 + result.tm_year) + "-" +
+         std::to_string(1 + result.tm_mon) + "-" +
+         std::to_string(result.tm_mday) + " " + std::to_string(result.tm_hour) +
+         ":" + std::to_string(result.tm_min) + ":" +
+         std::to_string(result.tm_sec);
 }
 
 }  // namespace cactus

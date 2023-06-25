@@ -1,10 +1,14 @@
-#ifndef CACTUS_MACROS_H_
-#define CACTUS_MACROS_H_
+/*
+ * Copyright (C) 2023 minhanghuang <job@minhang.me>. - All Rights Reserved
+ */
+#ifndef INCLUDE_CACTUS_MACROS_H_
+#define INCLUDE_CACTUS_MACROS_H_
 
 #include <iostream>
 #include <memory>
 #include <mutex>
 #include <type_traits>
+#include <utility>
 
 #define CACTUS_REGISTER_MEMBER_BASIC_TYPE(type, var, value) \
  private:                                                   \
@@ -94,4 +98,4 @@ typename std::enable_if<!HasShutdown<T>::value>::type CallShutdown(
   classname();                                                            \
   CACTUS_DISALLOW_COPY_AND_ASSIGN(classname)
 
-#endif  // CACTUS_MACROS_H_
+#endif  // INCLUDE_CACTUS_MACROS_H_

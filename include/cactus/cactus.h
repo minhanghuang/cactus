@@ -1,5 +1,8 @@
-#ifndef CACTUS_H_
-#define CACTUS_H_
+/*
+ * Copyright (C) 2023 minhanghuang <job@minhang.me>. - All Rights Reserved
+ */
+#ifndef INCLUDE_CACTUS_CACTUS_H_
+#define INCLUDE_CACTUS_CACTUS_H_
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -29,4 +32,4 @@ std::string GetTimeStr();
 
 }  // namespace cactus
 
-#endif  // CACTUS_H_
+#endif  // INCLUDE_CACTUS_CACTUS_H_

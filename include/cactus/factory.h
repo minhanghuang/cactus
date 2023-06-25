@@ -1,5 +1,8 @@
-#ifndef CACTUS_FACTORY_H_
-#define CACTUS_FACTORY_H_
+/*
+ * Copyright (C) 2023 minhanghuang <job@minhang.me>. - All Rights Reserved
+ */
+#ifndef INCLUDE_CACTUS_FACTORY_H_
+#define INCLUDE_CACTUS_FACTORY_H_
 #include <memory>
 #include <mutex>
 #include <string>
@@ -102,4 +105,4 @@ class Factory {
 
 }  // namespace cactus
 
-#endif  // CACTUS_FACTORY_H_
+#endif  // INCLUDE_CACTUS_FACTORY_H_

@@ -1,5 +1,8 @@
-#ifndef CACTUS_GEOMETRY_H_
-#define CACTUS_GEOMETRY_H_
+/*
+ * Copyright (C) 2023 minhanghuang <job@minhang.me>. - All Rights Reserved
+ */
+#ifndef INCLUDE_CACTUS_GEOMETRY_GEOMETRY_H_
+#define INCLUDE_CACTUS_GEOMETRY_GEOMETRY_H_
 
 #include <cmath>
 #include <string>
@@ -44,4 +47,4 @@ class Point4D : public Point3D {
 }  // namespace geometry
 }  // namespace cactus
 
-#endif  // CACTUS_GEOMETRY_H_
+#endif  // INCLUDE_CACTUS_GEOMETRY_GEOMETRY_H_

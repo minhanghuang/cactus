@@ -1,5 +1,8 @@
-#ifndef CACTUS_RW_LOCK_H_
-#define CACTUS_RW_LOCK_H_
+/*
+ * Copyright (C) 2023 minhanghuang <job@minhang.me>. - All Rights Reserved
+ */
+#ifndef INCLUDE_CACTUS_RW_LOCK_H_
+#define INCLUDE_CACTUS_RW_LOCK_H_
 
 #include <atomic>
 #include <condition_variable>
@@ -119,4 +122,4 @@ inline void AtomicRWLock::WriteUnlock() { lock_num_.fetch_add(1); }
 
 }  // namespace cactus
 
-#endif  // CACTUS_RW_LOCK_H_
+#endif  // INCLUDE_CACTUS_RW_LOCK_H_
