@@ -13,3 +13,6 @@ compile_commands.json
 
 __pycache__
 log/*
+install/
+third_party/
+thirdparty/
