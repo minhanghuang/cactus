@@ -4,7 +4,7 @@ project(cactus VERSION 1.2.1)
 set(TARGET_NAME ${PROJECT_NAME})
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-# set(CMAKE_BUILD_TYPE Debug) # Debug Release
+set(CMAKE_BUILD_TYPE Debug) # Debug Release
 
 option(BUILD_SHARED_LIBS "Build cactus shared library" ON)
 option(BUILD_CACTUS_TEST "Build cactus unittest" OFF)
