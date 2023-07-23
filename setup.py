@@ -4,6 +4,8 @@ import json
 import os
 from collections import OrderedDict
 
+__SETUP_VERSION__ = "1.0.0"
+
 
 class Template:
     def __init__(self) -> None:
@@ -243,6 +245,7 @@ class Pipeline:
 
 
 def main():
+    print("setup version: {}".format(__SETUP_VERSION__))
     pipe_line = Pipeline()
     pipe_line.init()
     pipe_line.download()
